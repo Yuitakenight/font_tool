@@ -3,7 +3,7 @@
 
 #pragma comment(lib, "detours.lib")
 
-LOGFONT originalLF; // 保存原始的LOGFONT结构体
+LOGFONT originalLF; 
 
 VOID __declspec(dllexport) CN()
 {
@@ -16,7 +16,7 @@ static decltype(&WideCharToMultiByte) TrueWideCharToMultiByte = WideCharToMultiB
 
 DWORD WINAPI RandomDelay()
 {
-    DWORD delay = rand() % 1000 + 500; // 500ms ~ 1500ms 随机延迟
+    DWORD delay = rand() % 1000 + 500; // 500ms ~ 1500ms 
     Sleep(delay);
     return delay;
 }
@@ -43,7 +43,7 @@ int WINAPI MyWideCharToMultiByte(
     LPCSTR lpDefaultChar,
     LPBOOL lpUsedDefaultChar)
 {
-    CodePage = 950; // BIG5 编码
+    CodePage = 950; // BIG5 
     return TrueWideCharToMultiByte(CodePage, dwFlags, lpWideCharStr, cchWideChar, lpMultiByteStr, cbMultiByte, lpDefaultChar, lpUsedDefaultChar);
 }
 
@@ -52,23 +52,23 @@ HGDIOBJ WINAPI MySelectObject(HDC hdc, HGDIOBJ h)
     LOGFONT lf;
     if (GetObject(h, sizeof(LOGFONT), &lf))
     {
-        if (lf.lfCharSet == DEFAULT_CHARSET) // 检测是否为系统字库
+        if (lf.lfCharSet == DEFAULT_CHARSET) 
         {
-            wcscpy_s(lf.lfFaceName, _countof(lf.lfFaceName), L"DFHei-GB5"); // 修改字体为"DFHei-GB5"
+            wcscpy_s(lf.lfFaceName, _countof(lf.lfFaceName), L"DFHei-GB5"); 
 
             HFONT hNewFont = CreateFontIndirect(&lf);
             if (hNewFont != NULL)
             {
-                HGDIOBJ hOldFont = SelectObject(hdc, hNewFont); // 选择新字体
+                HGDIOBJ hOldFont = SelectObject(hdc, hNewFont); 
+                
+                DeleteObject(h); 
 
-                DeleteObject(h); // 删除旧字体对象
-
-                return hOldFont; // 返回新字体对象句柄
+                return hOldFont; 
             }
         }
     }
 
-    return TrueSelectObject(hdc, h); // 返回原始调用结果
+    return TrueSelectObject(hdc, h); 
 }
 
 bool InstallHooks()
